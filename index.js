@@ -2,18 +2,24 @@ var tj = require('togeojson'),
     fs = require('fs'),
     // node doesn't have xml parsing or a dom. use xmldom 
     DOMParser = require('xmldom').DOMParser;
-var encode = require('geojson-polyline/stream').encode;
+var polyline = require('@mapbox/polyline');
 
 const file = '/home/edison/Documentos/Citytaxi_docs/Socobuses/INFORMACION SOCOBUSES/Rutas/601i_Morrogacho_Sultana_601r_Sultana_Morrogacho.kml' 
 
 toGeoJSON(file).then((geojson)=> {
 	convertedWithStyles(geojson).then((converted) => {
-		console.log(JSON.stringify(converted))
-		createFile(converted).then((fileCreated) => {
+		console.log(converted)
+
+         const geo = polyline.fromGeoJSON(converted.features[2])
+         console.log("Response from mapbox", geo)
+        
+		//console.log('encoded****************', encoded);
+
+		/*createFile(converted).then((fileCreated) => {
 			readFileGeoJSON(fileCreated);
 		}).catch((dontCantCreated) => {
 			console.error('dontCantCreated', dontCantCreated);
-		})
+		})*/
 	})
 })
 
