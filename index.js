@@ -4,14 +4,18 @@ var tj = require('togeojson'),
     DOMParser = require('xmldom').DOMParser;
 var polyline = require('@mapbox/polyline');
 
-const file = '/home/edison/Documentos/Citytaxi_docs/Socobuses/INFORMACION SOCOBUSES/Rutas/601i_Morrogacho_Sultana_601r_Sultana_Morrogacho.kml' 
+//Change the PATH to your kml Path
+
+const file = '/home/edison/Documentos/Citytaxi_docs/Socobuses/INFORMACION SOCOBUSES/Rutas/626vi_Villapilar_Mateguadua_626vr_Mateguadua_Villapilar.kml' 
 
 toGeoJSON(file).then((geojson)=> {
 	convertedWithStyles(geojson).then((converted) => {
-		console.log(converted)
-
-         const geo = polyline.fromGeoJSON(converted.features[2])
-         console.log("Response from mapbox", geo)
+		//console.log(converted)
+           
+         const geo1 = polyline.fromGeoJSON(converted.features[0])
+         const geo2 = polyline.fromGeoJSON(converted.features[2])
+         console.log("Ida", geo1)
+         console.log("regreso", geo2)
         
 		//console.log('encoded****************', encoded);
 
