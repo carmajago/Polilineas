@@ -1,62 +1,37 @@
 var tj = require('togeojson'),
-    fs = require('fs'),
-    // node doesn't have xml parsing or a dom. use xmldom 
-    DOMParser = require('xmldom').DOMParser;
+	fs = require('fs'),
+	// node doesn't have xml parsing or a dom. use xmldom 
+	DOMParser = require('xmldom').DOMParser;
 var polyline = require('@mapbox/polyline');
 
 //Change the PATH to your kml Path
 
-const file = '/home/edison/Documentos/Citytaxi_docs/Socobuses/INFORMACION SOCOBUSES/Rutas/626vi_Villapilar_Mateguadua_626vr_Mateguadua_Villapilar.kml' 
+const file = '/home/carlos/Escritorio/rutas/614JR MALTERIA JUANCHITO VILLAPILAR.kml'
 
-toGeoJSON(file).then((geojson)=> {
-	convertedWithStyles(geojson).then((converted) => {
-		//console.log(converted)
-           
-         const geo1 = polyline.fromGeoJSON(converted.features[0])
-         const geo2 = polyline.fromGeoJSON(converted.features[2])
-         console.log("Ida", geo1)
-         console.log("regreso", geo2)
-        
-		//console.log('encoded****************', encoded);
 
-		/*createFile(converted).then((fileCreated) => {
-			readFileGeoJSON(fileCreated);
-		}).catch((dontCantCreated) => {
-			console.error('dontCantCreated', dontCantCreated);
-		})*/
-	})
-})
+const geojson = toGeoJSON(file);
 
+console.log(geojson.features[2]);
+
+const points = [];
+
+geojson.features.forEach(element => {
+	const latitude = element.geometry.coordinates[1];
+	const longitude = element.geometry.coordinates[0];
+	const ar = [];
+	ar.push(latitude);
+	ar.push(longitude);
+	console.log(ar);
+	points.push(ar);
+});
+const poli1 = polyline.encode(points);
+console.log(poli1);
 
 function toGeoJSON(route) {
-	return new Promise((resolve, reject) => {
-		const kml = new DOMParser().parseFromString(fs.readFileSync(route, 'utf8'));
-		return resolve(kml);
-	})
+
+	var kml = new DOMParser().parseFromString(fs.readFileSync(route, 'utf8'));
+	var converted = tj.kml(kml);
+	return converted;
 }
 
-function convertedWithStyles(kml) {
-	return new Promise((resolve, reject) => {
-		const converted =  tj.kml(kml, { styles: true });
-		return resolve(converted);
-	})
-	
-}
 
-function createFile(converted) {
-	return new Promise((resolve, reject) => {
-		const fileToWrite = "/tmp/tests.geojson";
-		fs.writeFile(fileToWrite, JSON.stringify(converted) , function(err) {
-		    if(err) {
-		        return reject(err);
-		    }  
-		    return resolve(fileToWrite);
-		}); 
-	})
-}
-
-function readFileGeoJSON(filePath) {
-	fs.createReadStream('/tmp/tests.geojson')
-	  .pipe(encode({precision: 15}))
-	  .pipe(process.stdout)
-}
